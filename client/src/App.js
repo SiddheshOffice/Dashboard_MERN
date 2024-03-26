@@ -7,6 +7,8 @@ import { themeSettings } from "theme";
 import Dashboard from "scenes/dashboard";
 import Layout from "scenes/Layout";
 import Products from "scenes/Products";
+import Customers from "scenes/Customers";
+import Transactions from "scenes/Transactions";
 
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/products" element={<Products/>} />
+              <Route path="/customers" element={<Customers/>} />
+              <Route path="/transactions" element={<Transactions/>} />
             </Route>
           </Routes>
         </ ThemeProvider>
