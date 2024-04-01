@@ -2,7 +2,7 @@ import { Box, useTheme } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import DataGridCustomToolbar from 'components/DataGridCustomToolbar';
 import Header from 'components/Header';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useGetTransactionsQuery } from 'state/api';
 
 
@@ -15,14 +15,15 @@ const Transactions = () => {
   const [sort, setSort] = useState({});
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("")
-  const { isLoading, ...data } = useGetTransactionsQuery({
-    page: paginationModel.page,
+  const { isLoading, data, error } = useGetTransactionsQuery({
+    skip: paginationModel.page,
     pageSize: paginationModel.pageSize,
     sort: JSON.stringify(sort),
     search
   })
 
-  console.log(data)
+  console.log(data, data?.transactions.length)
+
 
   const columns = [
     {
@@ -55,6 +56,10 @@ const Transactions = () => {
     }
   ]
 
+
+  
+  
+
   return (
     <Box m={"1.5rem 2.5rem"}>
       <Header title={"TRANSACTIONS"} subtitle={"Entire list of transactions"} />
@@ -86,42 +91,28 @@ const Transactions = () => {
           }
         }}
       >
-        {/* <DataGrid
-        loading={isLoading || !data}
-        getRowId={(row)=> row._id}
-        rows={(data && data.transactions)||[]}
-        columns={columns}
-        rowCount={(data && data.total) || 0}
-        pageSizeOptions={[20, 50, 100]}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        paginationMode = "server"
-        sortingMode='server'
-        onSortModelChange={(newSortModel) => setSort(...newSortModel)}
-        slots={{toolbar: DataGridCustomToolbar}}
-        slotProps={{
-          toolbar: {searchInput, setSearchInput, setSearch}
-        }}
-        /> */}
+        
         <DataGrid
+      loading={isLoading || !data}
+      getRowId={(row)=> row._id}
+      rows={data?.transactions || []} // Handle empty initial data gracefully
+      columns={columns}
+      rowCount={data?.total || 0} // Handle empty initial data gracefully
+      paginationMode="server"
+      sortingMode='server'
+      onPageChange={(newPage) => setPaginationModel({...paginationModel, page: newPage})}
+      onPageSizeChange = {(newPageSize)=> setPaginationModel({...paginationModel, pageSize: newPageSize})}
+      onSortModelChange={(newSortModel)=> setSort(...newSortModel)}
+      slots={{toolbar: DataGridCustomToolbar}}
+      slotProps={{
+        toolbar: {searchInput, setSearchInput, setSearch}
+      }}
+      error={error ? error : undefined} // Handle error display
+    />
 
-        rows={(data && data.transactions)||[]}
-        {...data}
-        loading={isLoading || !data}
-        rowCount={(data && data.total) || 0}
-        pageSizeOptions={[20, 50, 100]}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        paginationMode = "server"
-        sortingMode='server'
-        onSortModelChange={(newSortModel) => setSort(...newSortModel)}
-        slots={{toolbar: DataGridCustomToolbar}}
-        slotProps={{
-          toolbar: {searchInput, setSearchInput, setSearch}
-        }}
-        />
-      </Box>
-    </Box>
+
+       </Box>
+     </Box>
   )
 }
 
